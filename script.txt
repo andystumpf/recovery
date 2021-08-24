@@ -1,0 +1,30 @@
+
+--Written by @TAndy 10.27.2019
+set appversion to {"3.0"}
+
+--TO ADD
+--[X]Dialog box "This app must be place on the desktop of the Mac
+
+
+
+display dialog "					Welcome to the 
+		           Remote Recovery for Mac
+				  
+		  Please make sure that this app is placed 
+          			on the desktop of this Mac." buttons {"Ok", "Cancel"} default button 1
+set ffmpeglocation to {"~/desktop/RecoveryForMac.app/Contents/ffmpeg"}
+
+
+display dialog "Select the folder that contains the video you recovered from the iPad" buttons {"Ok", "Cancel"} default button 1
+
+
+set thefolder to quoted form of POSIX path of (choose folder)
+tell application "Terminal"
+	tell application "Terminal"
+		reopen
+		activate
+		do script "cd " & thefolder & " && chmod a+x " & ffmpeglocation & "  && for s in *.*; do " & ffmpeglocation & " -f concat -safe 0 -i <(for f in `(ls $s/*.ts | cut -d'/' -f 2 | sort -n -t - -k 7)`; do echo 'file '$PWD/$s/$f''; done) -c copy ${s[@]%.hls/}.ts; done && find *.ts | sort -n -t - -k 2 | sed 's:\\ ::g'| sed 's/^/file /' > fraglist.txt; " & ffmpeglocation & " -f concat -safe 0 -i fraglist.txt -c copy UPLOAD-ONLY-THIS-FILE.ts && find . -name '*segment*' -delete"
+		
+		
+	end tell
+end tell
